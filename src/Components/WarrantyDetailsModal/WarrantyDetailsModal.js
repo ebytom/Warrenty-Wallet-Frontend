@@ -5,12 +5,15 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { Button, Form, Input, Modal, Upload } from "antd";
+import { Button, Form, Input, Modal, Select, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Axios } from "../../Config/Axios/Axios";
 import LoaderOverlay from "../LoaderOverlay/LoaderOverlay";
 import { UserContext } from "../../App";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import moment from "moment";
+
+const { Option } = Select;
 
 const WarrantyDetailsModal = forwardRef(
   ({ setTrucks, trucks, warrantyDetails }, ref) => {
@@ -26,6 +29,14 @@ const WarrantyDetailsModal = forwardRef(
 
     const { user } = useContext(UserContext);
     const token = localStorage.getItem("token");
+
+    const categories = [
+        { id: "electronics", name: "Electronics" },
+        { id: "fashion", name: "Fashion" },
+        { id: "home_kitchen", name: "Home & Kitchen" },
+        { id: "sport", name: "Sport" },
+        { id: "kids_toys", name: "Kids & Toys" },
+      ];
 
     useEffect(() => {
       //   setLoading(true);
@@ -57,6 +68,13 @@ const WarrantyDetailsModal = forwardRef(
     useImperativeHandle(ref, () => ({
       showLoading,
     }));
+
+    const handleDateChange = (e, dateType) => {
+      const dateValue = e.target.value;
+      // Convert date string to timestamp
+      const timestamp = new Date(dateValue).valueOf();
+      form.setFieldsValue({ [dateType]: dateValue });
+    };
 
     const normFile = (e) => {
       console.log(e);
@@ -266,7 +284,15 @@ const WarrantyDetailsModal = forwardRef(
                 },
               ]}
             >
-              <Input name="description" />
+              <Select
+                placeholder={"Select category"}
+              >
+                {categories?.map((option) => (
+                  <Option key={option.id} value={option.name}>
+                    {option.name}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
             <Form.Item
               label="Item Name"
@@ -287,7 +313,11 @@ const WarrantyDetailsModal = forwardRef(
             <Form.Item
               label="Purchase Date"
               name="purchasedOn"
-              initialValue={warrantyDetails ? warrantyDetails.purchasedOn : ""}
+              initialValue={
+                warrantyDetails
+                  ? moment(warrantyDetails.purchasedOn).format("YYYY-MM-DD")
+                  : ""
+              }
               rules={[
                 {
                   required: true,
@@ -295,20 +325,42 @@ const WarrantyDetailsModal = forwardRef(
                 },
               ]}
             >
-              <Input />
+              <input
+                type="date"
+                style={{
+                  padding: "10px",
+                  width: "100%",
+                  border: "1px solid #ddd",
+                  borderRadius: "7px",
+                }}
+                onChange={(e) => handleDateChange(e, "purchasedOn")}
+              />
             </Form.Item>
             <Form.Item
               label="Expiry Date"
               name="expiresOn"
-              initialValue={warrantyDetails ? warrantyDetails.expiresOn : ""}
               rules={[
                 {
                   required: true,
                   message: "Please select a expiry date",
                 },
               ]}
+              initialValue={
+                warrantyDetails
+                  ? moment(warrantyDetails.expiresOn).format("YYYY-MM-DD")
+                  : ""
+              }
             >
-              <Input />
+              <input
+                type="date"
+                style={{
+                  padding: "10px",
+                  width: "100%",
+                  border: "1px solid #ddd",
+                  borderRadius: "7px",
+                }}
+                onChange={(e) => handleDateChange(e, "expiresOn")}
+              />
             </Form.Item>
             <Form.Item
               label="Description"

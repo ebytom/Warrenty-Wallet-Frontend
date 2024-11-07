@@ -59,7 +59,7 @@ const WarrantyCard = ({ warranty }) => {
             <span style={{ fontSize: 12, fontWeight: "bold" }}>
               {warranty.percentage === 100
                 ? "Warranty expired"
-                : `${warranty.monthsLeft} months left`}
+                : `Expires in ${warranty.daysLeft} days`}
             </span>
             <Progress
               percent={warranty.percentage}
