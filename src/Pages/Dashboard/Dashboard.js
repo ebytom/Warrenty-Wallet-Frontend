@@ -22,14 +22,14 @@ const Dashboard = () => {
   const sampleData = [
     // Electronics
     {
-      name: "HP 13'' Laptop 32gb",
+      itemName: "HP 13'' Laptop 32gb",
       category: "electronics",
       expiresOn: "12/09/2024",
       monthsLeft: 9,
       percentage: 60,
     },
     {
-      name: "Samsung 50'' LED TV",
+      itemName: "Samsung 50'' LED TV",
       category: "electronics",
       expiresOn: "03/15/2025",
       monthsLeft: 12,
@@ -38,14 +38,14 @@ const Dashboard = () => {
 
     // Automotive
     {
-      name: "Goodyear All-Season Tires",
+      itemName: "Goodyear All-Season Tires",
       category: "automotive",
       expiresOn: "06/01/2025",
       monthsLeft: 18,
       percentage: 40,
     },
     {
-      name: "Bosch Car Battery",
+      itemName: "Bosch Car Battery",
       category: "automotive",
       expiresOn: "09/20/2026",
       monthsLeft: 24,
@@ -54,14 +54,14 @@ const Dashboard = () => {
 
     // Fashion
     {
-      name: "Nike Air Max Shoes",
+      itemName: "Nike Air Max Shoes",
       category: "fashion",
       expiresOn: "05/30/2025",
       monthsLeft: 0,
       percentage: 100,
     },
     {
-      name: "Adidas Running Jacket",
+      itemName: "Adidas Running Jacket",
       category: "fashion",
       expiresOn: "11/22/2024",
       monthsLeft: 7,
@@ -70,14 +70,14 @@ const Dashboard = () => {
 
     // Home & Kitchen
     {
-      name: "Dyson Cordless Vacuum Cleaner",
+      itemName: "Dyson Cordless Vacuum Cleaner",
       category: "home_kitchen",
       expiresOn: "04/10/2025",
       monthsLeft: 11,
       percentage: 70,
     },
     {
-      name: "Instant Pot Pressure Cooker",
+      itemName: "Instant Pot Pressure Cooker",
       category: "home_kitchen",
       expiresOn: "10/05/2025",
       monthsLeft: 0,
@@ -86,14 +86,14 @@ const Dashboard = () => {
 
     // Kids & Toys
     {
-      name: "LEGO City Fire Station",
+      itemName: "LEGO City Fire Station",
       category: "kids_toys",
       expiresOn: "12/25/2024",
       monthsLeft: 9,
       percentage: 55,
     },
     {
-      name: "Barbie Dreamhouse",
+      itemName: "Barbie Dreamhouse",
       category: "kids_toys",
       expiresOn: "08/15/2025",
       monthsLeft: 16,
@@ -102,14 +102,14 @@ const Dashboard = () => {
 
     // Phones
     {
-      name: "iPhone 14 Pro",
+      itemName: "iPhone 14 Pro",
       category: "phones",
       expiresOn: "01/31/2025",
       monthsLeft: 10,
       percentage: 60,
     },
     {
-      name: "Samsung Galaxy S23",
+      itemName: "Samsung Galaxy S23",
       category: "phones",
       expiresOn: "07/07/2025",
       monthsLeft: 12,
@@ -118,14 +118,14 @@ const Dashboard = () => {
 
     // Sport
     {
-      name: "Wilson Tennis Racket",
+      itemName: "Wilson Tennis Racket",
       category: "sport",
       expiresOn: "03/18/2025",
       monthsLeft: 11,
       percentage: 50,
     },
     {
-      name: "Nike Running Shoes",
+      itemName: "Nike Running Shoes",
       category: "sport",
       expiresOn: "09/28/2024",
       monthsLeft: 6,
@@ -139,7 +139,7 @@ const Dashboard = () => {
     const lowercasedValue = searchValue.toLowerCase().trim();
     const filtered = sampleData.filter((item) => {
       const matchesSearch =
-        item.name.toLowerCase().includes(lowercasedValue) ||
+        item.itemName.toLowerCase().includes(lowercasedValue) ||
         item.category.toLowerCase().includes(lowercasedValue);
 
       const matchesCategory = selectedCategories.length
@@ -205,26 +205,25 @@ const Dashboard = () => {
 
   return (
     <>
-      <Filters setSearchValue={setSearchValue} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} />
+      <Filters
+        setSearchValue={setSearchValue}
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+      />
       <LoaderOverlay isVisible={contentLoader} />
       {loader ? (
         <div className="w-100 my-5 d-flex align-items-center justify-content-center">
           <b className="me-3">Loading</b>
           <Spin size="large" />
         </div>
-      ) : (
+      ) : filteredData.length ? (
         <div className="warranty-card-list">
-          {filteredData.map((item) => {
-            return <WarrantyCard warranty={item} />;
-          })}
-          {/* <button
-              className="warranty-card p-2 rounded d-flex gap-3 align-items-center justify-content-center"
-              style={{ border: "2px dashed #cbcbcb", minHeight: 150 }}
-              onClick={callVehicleModal}
-            >
-              <PlusCircleFilled style={{ fontSize: 76, color: "#d6d6d6" }} />
-            </button> */}
+          {filteredData.map((item, index) => (
+            <WarrantyCard warranty={item} key={index} />
+          ))}
         </div>
+      ) : (
+        <b className="fs-5" style={{ color: "#d3d3d3" }}>No warranties added yet—add one and give your brain a little break!</b>
       )}
     </>
   );

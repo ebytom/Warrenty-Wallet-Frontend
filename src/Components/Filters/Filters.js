@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Input, Popover } from "antd";
 import { FilterIcon, PlusIcon, SearchIcon } from "@primer/octicons-react";
+import WarrantyDetailsModal from "../WarrantyDetailsModal/WarrantyDetailsModal";
 
-const Filters = ({ setSearchValue, setSelectedCategories, selectedCategories }) => {
+const Filters = ({ setSearchValue, setSelectedCategories, selectedCategories, setWarranty, warranty }) => {
   const [open, setOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const categories = [
@@ -12,6 +13,13 @@ const Filters = ({ setSearchValue, setSelectedCategories, selectedCategories }) 
     { id: "sport", name: "Sport" },
     { id: "kids_toys", name: "Kids & Toys" },
   ];
+  const warrantyDetailsModalRef = useRef();
+
+  const callWarrantyDetailsModal = () => {
+    if (warrantyDetailsModalRef.current) {
+      warrantyDetailsModalRef.current.showLoading();
+    }
+  };
 
   const categoryContainerRef = useRef(null);
 
@@ -46,6 +54,7 @@ const Filters = ({ setSearchValue, setSelectedCategories, selectedCategories }) 
   }, [categories, showMore]);
 
   return (
+    <>
     <div className="bg-light p-3 mb-5 rounded">
       <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
         <Input
@@ -69,7 +78,7 @@ const Filters = ({ setSearchValue, setSelectedCategories, selectedCategories }) 
             <FilterIcon fill="white" />
           </Button>
         </Popover>
-        <Button style={{ background: "#00348a", height: "48px" }}>
+        <Button style={{ background: "#00348a", height: "48px" }} onClick={callWarrantyDetailsModal}>
           <PlusIcon fill="white" />
         </Button>
       </div>
@@ -109,6 +118,11 @@ const Filters = ({ setSearchValue, setSelectedCategories, selectedCategories }) 
         </Button>
       )}
     </div>
+    <WarrantyDetailsModal
+        ref={warrantyDetailsModalRef}
+        warrantyDetails={warranty}
+      />
+    </>
   );
 };
 
