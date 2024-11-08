@@ -21,28 +21,7 @@ const AboutUsModal = forwardRef(({}, ref) => {
       footer={null}
     >
       <div className="mt-4 p-2" style={{textAlign: 'justify'}}>
-        <p>
-          <strong>Warranty Wallet</strong>
-        </p>
-        <h5>Features</h5>
-        <ul>
-          <li>
-            <strong>Expense Tracking:</strong> Monitor and categorize all your
-            truck-related expenses.
-          </li>
-          <li>
-            <strong>Profit Analysis:</strong> Analyze your profits over
-            different periods.
-          </li>
-          <li>
-            <strong>Cost Management:</strong> Track and manage costs associated
-            with truck operation and maintenance.
-          </li>
-          <li>
-            <strong>User-Friendly Interface:</strong> Intuitive and responsive
-            UI developed with React.
-          </li>
-        </ul>
+        
       </div>
     </Modal>
   );

@@ -1,12 +1,43 @@
 import { Divider, Drawer, FloatButton } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { VersionsIcon } from "@primer/octicons-react";
+import NotificationCard from "../NotificationCard/NotificationCard";
+import { UserContext } from "../../App";
+import { Axios } from "../../Config/Axios/Axios";
 
 const NotificationDrawer = ({ navOpen, setNavOpen }) => {
+  const [isError, setIsError] = useState(false)
+  const [notifications, setNotifications] = useState([])
   const onNavClose = () => {
     setNavOpen(false);
   };
+
+  const { user } = useContext(UserContext);
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    // setContentLoader(true);
+    Axios.get(`/api/v1/app/warranty/getExpiringWarrantiesByUser/${user.userId}`, {
+      params: {
+        addedBy: user.userId,
+      },
+      headers: {
+        authorization: `bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        setNotifications(res.data);
+        // setContentLoader(false);
+        console.log(res);
+      })
+      .catch((err) => {
+        setIsError(true);
+        // setContentLoader(false);
+      });
+
+    return () => {};
+  }, []);
 
   return (
     <Drawer
@@ -17,13 +48,10 @@ const NotificationDrawer = ({ navOpen, setNavOpen }) => {
       style={{ padding: 0, height: "100vh" }}
       key={"left"}
     >
-      <div className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-        <VersionsIcon fill="#eee" size={120} />
-        <div className="mt-4 text-center">
-          <b className="fs-5" style={{ color: "#808080" }}>
-            Notification features are coming soon.
-          </b>
-        </div>
+      <div className="w-100 d-flex flex-column justify-content-center mb-4">
+        <b className="fs-4" style={{ color: "#808080" }}>
+          Notifications
+        </b>
       </div>
 
       <FloatButton
@@ -36,6 +64,13 @@ const NotificationDrawer = ({ navOpen, setNavOpen }) => {
         onClick={onNavClose}
         icon={<CloseOutlined />}
       />
+      {
+        notifications?.map((notification)=>{
+          return(
+            <NotificationCard notification={notification}/>
+          )
+        })
+      }
     </Drawer>
   );
 };

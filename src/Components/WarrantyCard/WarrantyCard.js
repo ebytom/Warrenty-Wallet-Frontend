@@ -39,7 +39,7 @@ const WarrantyCard = ({ warranty }) => {
           }}
         >
           <img
-            src={`../../assets/img/${warranty.category}.png`}
+            src={`../../assets/img/${warranty.category.toLowerCase()}.png`}
             alt="product"
             style={{
               objectFit: "contain",
@@ -57,15 +57,15 @@ const WarrantyCard = ({ warranty }) => {
           </div>
           <div className="w-100" style={{ textAlign: "left" }}>
             <span style={{ fontSize: 12, fontWeight: "bold" }}>
-              {warranty.percentage === 100
+              {warranty.daysLeft === 0
                 ? "Warranty expired"
                 : `Expires in ${warranty.daysLeft} days`}
             </span>
             <Progress
               percent={warranty.percentage}
-              status={warranty.percentage === 100 ? "exception" : "active"}
-              format={warranty.percentage === 100 ? "" : () => ""}
-              strokeColor={warranty.percentage === 100 ? "red" : "#00348a"}
+              status={warranty.daysLeft === 0 ? "exception" : "active"}
+              format={warranty.daysLeft === 0 ? "" : () => ""}
+              strokeColor={warranty.daysLeft === 0 ? "red" : "#00348a"}
             />
           </div>
         </div>
