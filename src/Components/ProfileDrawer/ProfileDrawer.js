@@ -31,24 +31,24 @@ const ProfileDrawer = ({ profileOpen, setProfileOpen }) => {
     // const userCred = jwtDecode(localStorage.getItem("token"));
     // setuserCredentials(userCred);
 
-    setLoading(true);
+    // setLoading(true);
 
-    Axios.get(`/api/v1/app/metadata/getProfileMetadataByUserId`, {
-      params: {
-        userId: user?.userId,
-      },
-      headers: {
-        authorization: `bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        setMetadata(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setIsError(true);
-        setLoading(false);
-      });
+    // Axios.get(`/api/v1/app/metadata/getProfileMetadataByUserId`, {
+    //   params: {
+    //     userId: user?.userId,
+    //   },
+    //   headers: {
+    //     authorization: `bearer ${token}`,
+    //   },
+    // })
+    //   .then((res) => {
+    //     setMetadata(res.data);
+    //     setLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     setIsError(true);
+    //     setLoading(false);
+    //   });
   }, []);
 
   const onProfileClose = () => {
