@@ -49,6 +49,8 @@ const ProfileDrawer = ({ profileOpen, setProfileOpen }) => {
     //     setIsError(true);
     //     setLoading(false);
     //   });
+    setLoading(false);
+
   }, []);
 
   const onProfileClose = () => {

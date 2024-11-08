@@ -4,7 +4,7 @@ import { Axios } from "../../Config/Axios/Axios";
 
 const NotificationCard = ({notification}) => {
   return (
-    <div className="p-2 rounded mb-3" style={{ background: "#eee" }}>
+    <div className="p-3 rounded mb-3" style={{ background: "#eee" }}>
       <div className="d-flex gap-2">
         <MessageTwoTone style={{ fontSize: 16 }} />
         <b style={{ fontSize: 13 }}>Expiry Alert!</b>
