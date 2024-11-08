@@ -93,16 +93,16 @@ const Filters = ({ setSearchValue, setSelectedCategories, selectedCategories, se
       >
         {categories.map((category) => (
           <Button
-            key={category.id}
+            key={category.name}
             className={
-              selectedCategories.includes(category.id)
+              selectedCategories.includes(category.name)
                 ? "categorySelect-selected px-3 rounded"
                 : "categorySelect px-3 rounded"
             }
             style={{
               fontSize: 11,
             }}
-            onClick={() => handleButtonClick(category.id)}
+            onClick={() => handleButtonClick(category.name)}
           >
             {category.name}
           </Button>

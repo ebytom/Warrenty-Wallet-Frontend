@@ -154,7 +154,7 @@ const ProfileDrawer = ({ profileOpen, setProfileOpen }) => {
             </ConfirmModal>
           </div>
           <Divider />
-          <div className="d-flex justify-content-between text-center mt-3 mb-2">
+          {/* <div className="d-flex justify-content-between text-center mt-3 mb-2">
             <div>
               <p className="mb-2 h5">{metadata.totalTrucks}</p>
               <p className="text-muted mb-0">Total Trucks</p>
@@ -167,11 +167,11 @@ const ProfileDrawer = ({ profileOpen, setProfileOpen }) => {
               <p className="mb-2 h5">{metadata.totalDays}</p>
               <p className="text-muted mb-0">Total Days</p>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="w-100 d-flex justify-content-center mt-4">
-        <p style={{ color: "#808080", fontSize: 12 }}>Developed by codhub</p>
+        <p style={{ color: "#808080", fontSize: 12 }}>Developed by AWengerS</p>
       </div>
       <FloatButton
         shape="circle"

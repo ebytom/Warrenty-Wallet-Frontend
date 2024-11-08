@@ -52,7 +52,7 @@ const WarrantyCard = ({ warranty }) => {
           <div style={{ textAlign: "left" }}>
             <h6 className="fw-bold m-0 p-0">{warranty.itemName}</h6>
             <span className="p-0 b-0 text-secondary" style={{ fontSize: 11 }}>
-              Expires on {warranty.expiresOn}
+              Expires on {warranty.expiresOn.split("T")[0].split("-").reverse().join("/")}
             </span>
           </div>
           <div className="w-100" style={{ textAlign: "left" }}>
