@@ -80,7 +80,7 @@ const Login = ({ setauthenticated }) => {
                   <h1><b>Warranty Wallet</b></h1>
                   <hr className="border-primary-subtle mb-4" />
                   <p className="lead mb-5">
-                    <strong>Warranty Wallet</strong>
+                    <strong>Effortlessly organize and track all your warranties in one place with Warranty Wallet. Never lose sight of what’s covered – keep your warranties safe, secure, and always within reach!</strong>
                   </p>
                 </div>
               </div>
