@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   EditOutlined,
   EllipsisOutlined,
@@ -6,10 +6,14 @@ import {
 } from "@ant-design/icons";
 import { Progress } from "antd";
 import WarrantyDetailsModal from "../WarrantyDetailsModal/WarrantyDetailsModal";
+import { PeopleIcon } from "@primer/octicons-react";
+import { UserContext } from "../../App";
 
 const WarrantyCard = ({ warranty }) => {
   const [loading, setLoading] = useState(false);
   const warrantyDetailsModalRef = useRef();
+
+  const { user } = useContext(UserContext);
 
   const callWarrantyDetailsModal = () => {
     if (warrantyDetailsModalRef.current) {
@@ -49,11 +53,23 @@ const WarrantyCard = ({ warranty }) => {
           />
         </div>
         <div className="p-2 w-100 h-100 d-flex flex-column justify-content-between">
-          <div style={{ textAlign: "left" }}>
-            <h6 className="fw-bold m-0 p-0">{warranty.itemName}</h6>
-            <span className="p-0 b-0 text-secondary" style={{ fontSize: 11 }}>
-              Expires on {warranty.expiresOn.split("T")[0].split("-").reverse().join("/")}
-            </span>
+          <div className="d-flex justify-content-between">
+            <div style={{ textAlign: "left" }}>
+              <h6 className="fw-bold m-0 p-0">{warranty.itemName}</h6>
+              <span className="p-0 b-0 text-secondary" style={{ fontSize: 11 }}>
+                Expires on{" "}
+                {warranty.expiresOn
+                  .split("T")[0]
+                  .split("-")
+                  .reverse()
+                  .join("/")}
+              </span>
+            </div>
+            {user.userId != warranty.addedBy && (
+              <div>
+                <PeopleIcon />
+              </div>
+            )}
           </div>
           <div className="w-100" style={{ textAlign: "left" }}>
             <span style={{ fontSize: 12, fontWeight: "bold" }}>

@@ -5,13 +5,18 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { Button, Form, Input, Modal, Select, Upload } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Form, Input, message, Modal, Select, Upload } from "antd";
+import {
+  CloseCircleFilled,
+  CloseOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { Axios } from "../../Config/Axios/Axios";
 import LoaderOverlay from "../LoaderOverlay/LoaderOverlay";
 import { UserContext } from "../../App";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import moment from "moment";
+import { ShareIcon } from "@primer/octicons-react";
 
 const { Option } = Select;
 
@@ -36,6 +41,15 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
     { id: "sport", name: "Sport" },
     { id: "kids_toys", name: "Kids & Toys" },
   ];
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const toastMessage = (type, mssg) => {
+    messageApi.open({
+      type: type,
+      content: mssg,
+    });
+  };
 
   useEffect(() => {
     //   setLoading(true);
@@ -117,7 +131,7 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
           formData.append(key, values[key]);
         }
       });
-      formData.append("addedBy",user.userId); // Replace with dynamic user ID if needed
+      formData.append("addedBy", user.userId); // Replace with dynamic user ID if needed
 
       if (warrantyDetails) {
         // Update existing warranty
@@ -148,7 +162,7 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
       window.location.reload();
     } catch (error) {
       console.error("Form submission failed:", error);
-      setIsError(true);
+      toastMessage('warning','Something went wrong!')
       setContentLoader(false); // Hide the loader after an error
     }
   };
@@ -178,8 +192,11 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
     setShowDeleteConfirm(true);
   };
 
+  const removeAccess = () => {};
+
   return (
     <>
+      {contextHolder}
       <LoaderOverlay isVisible={contentLoader} />
       <Modal
         title="Warranty Details"
@@ -213,11 +230,6 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
         }}
         loading={loading}
       >
-        {isError && (
-          <b className="text-danger">
-            Something went wrong! Check your entry...
-          </b>
-        )}
         <Form
           form={form}
           name="form"
@@ -230,7 +242,13 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
         >
           {warrantyDetails && warrantyDetails.invoiceURL ? (
             <Form.Item label="Invoice" name="invoiceURL">
-              <Button type="primary" style={{width: "100%"}} onClick={()=>window.open(warrantyDetails.invoiceURL, '_blank')}>
+              <Button
+                type="primary"
+                style={{ width: "100%" }}
+                onClick={() =>
+                  window.open(warrantyDetails.invoiceURL, "_blank")
+                }
+              >
                 Preview
               </Button>
             </Form.Item>
@@ -357,7 +375,7 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
             <Input name="description" />
           </Form.Item>
           <Form.Item
-            label="Warranty Provider"
+            label="Provider"
             name="warrantyProvider"
             initialValue={
               warrantyDetails ? warrantyDetails.warrantyProvider : ""
@@ -365,6 +383,52 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
           >
             <Input />
           </Form.Item>
+          {warrantyDetails && (
+            <>
+              <hr style={{ color: "#919191" }} />
+              <Form.Item
+                label="Share With"
+                name="sharedWith"
+                initialValue={warrantyDetails ? warrantyDetails.sharedWith : ""}
+              >
+                <div className="d-flex gap-2">
+                  <Input />
+                  <Button type="primary" onClick={()=>toastMessage('success','Access Shared Sucessfully!')}>
+                    <ShareIcon size={16} />
+                  </Button>
+                </div>
+                {warrantyDetails?.sharedWith && (
+                  <div
+                    style={{ border: "1px solid #eee" }}
+                    className="p-2 mt-2 rounded d-grid gap-2"
+                  >
+                    {warrantyDetails &&
+                      warrantyDetails?.sharedWith?.map((user) => {
+                        <div
+                          className="rounded px-1 d-flex gap-2"
+                          style={{
+                            background: "#ddeafe",
+                            width: "fit-content",
+                          }}
+                        >
+                          <span style={{ fontSize: 14 }}>
+                            ebytomy7@gmail.com
+                          </span>
+                          <ConfirmModal
+                            title="Remove Access"
+                            content="Are you sure you want remove access for  this user?"
+                            onOk={removeAccess}
+                            onCancel={() => {}}
+                          >
+                            <CloseCircleFilled style={{ fontSize: 16 }} />
+                          </ConfirmModal>
+                        </div>;
+                      })}
+                  </div>
+                )}
+              </Form.Item>
+            </>
+          )}
         </Form>
       </Modal>
       <Modal
