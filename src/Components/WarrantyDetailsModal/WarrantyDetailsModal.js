@@ -182,7 +182,7 @@ const WarrantyDetailsModal = forwardRef(({ warrantyDetails }, ref) => {
     <>
       <LoaderOverlay isVisible={contentLoader} />
       <Modal
-        title="Vehicle Details"
+        title="Warranty Details"
         footer={
           warrantyDetails
             ? [

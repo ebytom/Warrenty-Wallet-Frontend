@@ -61,13 +61,6 @@ const Dashboard = () => {
     return () => {};
   }, []);
 
-  const vehicleModalRef = useRef();
-
-  const callVehicleModal = () => {
-    if (vehicleModalRef.current) {
-      vehicleModalRef.current.showLoading();
-    }
-  };
 
   return (
     <>
