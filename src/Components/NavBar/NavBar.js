@@ -1,50 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Divider, Space } from "antd";
-import { MenuFoldOutlined, LeftOutlined } from "@ant-design/icons";
+import { MenuFoldOutlined } from "@ant-design/icons";
 import { PersonIcon } from "@primer/octicons-react";
 import ProfileDrawer from "../ProfileDrawer/ProfileDrawer";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Axios } from "../../Config/Axios/Axios";
 import NotificationDrawer from "../NotificationDrawer/NotificationDrawer";
 
 const NavBar = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [truckDetails, setTruckDetails] = useState({});
-  const [isError, setIsError] = useState(false);
-  const [expenses, setExpenses] = useState({
-    fuelExpenses: "Fuel Expenses",
-    defExpenses: "Def Expenses",
-    otherExpenses: "Other Expenses",
-    totalExpenses: "Total Expenses",
-    totalFuelExpenses: "Total Fuel Expenses",
-    totalDefExpenses: "Total Def Expenses",
-    totalOtherExpenses: "Total Other Expenses",
-  });
-
-  const loc = useLocation();
-  const navigate = useNavigate();
-
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    setTruckDetails({});
-    const truckId = loc.pathname.split("/")[3];
-    if (truckId) {
-      Axios.get(`/api/v1/app/truck/getTruckById/${truckId}`, {
-        headers: {
-          authorization: `bearer ${token}`,
-        },
-      })
-        .then((res) => {
-          setTruckDetails(res.data);
-        })
-        .catch((err) => {
-          setTruckDetails({});
-          setIsError(true);
-        });
-    }
-  }, [loc.pathname]);
 
   const showNavDrawer = () => {
     setNavOpen(true);
@@ -53,8 +16,6 @@ const NavBar = () => {
   const showProfileDrawer = () => {
     setProfileOpen(true);
   };
-
-  const registrationNo = truckDetails.registrationNo;
 
   return (
     <div className="mb-4">

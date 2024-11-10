@@ -9,7 +9,7 @@ import WarrantyDetailsModal from "../WarrantyDetailsModal/WarrantyDetailsModal";
 import { PeopleIcon } from "@primer/octicons-react";
 import { UserContext } from "../../App";
 
-const WarrantyCard = ({ warranty }) => {
+const WarrantyCard = ({ warranty, toastMessage }) => {
   const [loading, setLoading] = useState(false);
   const warrantyDetailsModalRef = useRef();
 
@@ -89,6 +89,7 @@ const WarrantyCard = ({ warranty }) => {
       <WarrantyDetailsModal
         ref={warrantyDetailsModalRef}
         warrantyDetails={warranty}
+        toastMessage={toastMessage}
       />
     </>
   );

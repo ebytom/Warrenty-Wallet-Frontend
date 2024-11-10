@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Axios } from "../../Config/Axios/Axios";
 import { UserContext } from "../../App";
-import { Divider, Flex, Spin } from "antd";
+import { Divider, Flex, message, Spin } from "antd";
 import { PlusCircleFilled } from "@ant-design/icons";
 import LoaderOverlay from "../../Components/LoaderOverlay/LoaderOverlay";
 import CategoryFilter from "../../Components/Filters/CategoryFilter/CategoryFilter";
@@ -17,7 +17,17 @@ const Dashboard = () => {
   const [isError, setIsError] = useState(false);
   const [warranty, setWarranty] = useState([]);
   const [metadata, setMetadata] = useState([]);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
   const { user } = useContext(UserContext);
+
+  const toastMessage = (type, mssg) => {
+    messageApi.open({
+      type: type,
+      content: mssg,
+    });
+  };
 
   const token = localStorage.getItem("token");
 
@@ -61,9 +71,9 @@ const Dashboard = () => {
     return () => {};
   }, []);
 
-
   return (
     <>
+      {contextHolder}
       <Filters
         setSearchValue={setSearchValue}
         selectedCategories={selectedCategories}
@@ -72,13 +82,15 @@ const Dashboard = () => {
       {/* <LoaderOverlay isVisible={contentLoader} /> */}
       {contentLoader ? (
         <div className="w-100 my-5 d-flex align-items-center justify-content-center">
-          <b className="me-3" style={{color: "#000"}}>Loading</b>
+          <b className="me-3" style={{ color: "#000" }}>
+            Loading
+          </b>
           <Spin size="large" />
         </div>
       ) : filteredData.length ? (
         <div className="warranty-card-list">
           {filteredData.map((item, index) => (
-            <WarrantyCard warranty={item} key={index} />
+            <WarrantyCard warranty={item} key={index} toastMessage={toastMessage}/>
           ))}
         </div>
       ) : (
