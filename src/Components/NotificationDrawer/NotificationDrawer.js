@@ -65,9 +65,9 @@ const NotificationDrawer = ({ navOpen, setNavOpen }) => {
         icon={<CloseOutlined />}
       />
       {
-        notifications?.map((notification)=>{
+        notifications?.map((notification, index)=>{
           return(
-            <NotificationCard notification={notification}/>
+            <NotificationCard notification={notification} key={index}/>
           )
         })
       }
