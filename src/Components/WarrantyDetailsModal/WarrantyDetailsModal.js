@@ -8,20 +8,21 @@ import React, {
 import { Button, Form, Input, Modal, Select, Upload } from "antd";
 import {
   CloseCircleFilled,
-  CloseOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import { Axios } from "../../Config/Axios/Axios";
 import LoaderOverlay from "../LoaderOverlay/LoaderOverlay";
 import { UserContext } from "../../App";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import { useToast } from "../ToastContext/ToastContext";
 import moment from "moment";
 import { ShareIcon } from "@primer/octicons-react";
+import { useWarranty } from '../WarrantyContext/WarrantyContext';
 
 const { Option } = Select;
 
 const WarrantyDetailsModal = forwardRef(
-  ({ warrantyDetails, toastMessage }, ref) => {
+  ({ warrantyDetails }, ref) => {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [contentLoader, setContentLoader] = useState(false);
@@ -33,6 +34,8 @@ const WarrantyDetailsModal = forwardRef(
     const [deleteForm] = Form.useForm();
 
     const { user } = useContext(UserContext);
+    const { setWarranties, warranties } = useWarranty();
+    const toastMessage = useToast();
     const token = localStorage.getItem("token");
 
     const categories = [
@@ -126,7 +129,7 @@ const WarrantyDetailsModal = forwardRef(
         });
         formData.append("addedBy", user.userId); // Replace with dynamic user ID if needed
 
-        if (warranty) {
+        if (Object.keys(warranty).length > 0) {
           // Update existing warranty
           await Axios.put(
             `/api/v1/app/warranty/updateWarrantyById/${warranty?._id}`,
@@ -137,7 +140,11 @@ const WarrantyDetailsModal = forwardRef(
                 "Content-Type": "multipart/form-data",
               },
             }
-          );
+          )
+          .then(res=>{
+            toastMessage("success", "Warranty updated successfully!");
+            setWarranties(res.data.warranties)
+          })
         } else {
           // Add new warranty
           await Axios.post("/api/v1/app/warranty/addWarranty", formData, {
@@ -145,18 +152,22 @@ const WarrantyDetailsModal = forwardRef(
               authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
-          });
+          })
+          .then(res=>{
+            toastMessage("success", "Warranty added successfully!");
+            setWarranties(res.data.warranties)
+          })
         }
 
         // Reset form and close modal
         setContentLoader(false);
         setOpen(false);
         form.resetFields();
-        window.location.reload();
+        // window.location.reload();
       } catch (error) {
         console.error("Form submission failed:", error);
         toastMessage("warning", "Something went wrong!");
-        setContentLoader(false); // Hide the loader after an error
+        setContentLoader(false); 
       }
     };
 
@@ -201,9 +212,10 @@ const WarrantyDetailsModal = forwardRef(
               },
             }
           );
-
+          setWarranty(response.data.warranty);
+          console.log(response);
+          
           toastMessage("success", response.data.message);
-          setWarranty(response.data);
         } catch (err) {
           console.error("Failed to share access:", err);
           toastMessage("warning", err.response.data.message);
@@ -231,8 +243,8 @@ const WarrantyDetailsModal = forwardRef(
             data: { email }, // Pass email in the request body
           }
         );
+        setWarranty(response.data.warranty); // Update warranty data with response
         toastMessage("success", response.data.message);
-        setWarranty(response.data); // Update warranty data with response
       } catch (err) {
         console.error("Failed to revoke access:", err);
         toastMessage("warning", err.response.data.message);
@@ -248,7 +260,7 @@ const WarrantyDetailsModal = forwardRef(
           title="Warranty Details"
           footer={
             !(isDisabled()) &&
-            (warranty
+            (warranty && Object.keys(warranty).length > 0
               ? [
                   <ConfirmModal
                     title="Confirm Action"
@@ -382,6 +394,7 @@ const WarrantyDetailsModal = forwardRef(
             >
               <input
                 type="date"
+                max={moment().format("YYYY-MM-DD")}
                 style={{
                   padding: "10px",
                   width: "100%",
