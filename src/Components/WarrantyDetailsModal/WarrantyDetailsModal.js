@@ -68,7 +68,7 @@ const WarrantyDetailsModal = forwardRef(
           });
       }
       setLoading(false);
-    }, []);
+    }, [warranties]);
 
     const showLoading = () => {
       setOpen(true);
@@ -119,10 +119,10 @@ const WarrantyDetailsModal = forwardRef(
         // Create FormData to send all values (including file) directly to backend
         const formData = new FormData();
         Object.keys(values).forEach((key) => {
-          if (key === "invoiceURL" && values.invoiceURL?.[0]?.originFileObj) {
-            // Append file for `invoiceURL` if present
+          if (key === "invoiceURL" && values.invoiceURL?.[0]?.originFileObj && Object.keys(warranty).length === 0) {
+            // Append file for `invoiceURL` only if adding a new warranty (warranty object is empty)
             formData.append("invoiceFile", values.invoiceURL[0].originFileObj);
-          } else {
+          } else if (key !== "invoiceURL") {
             // Append other form fields
             formData.append(key, values[key]);
           }
@@ -131,9 +131,11 @@ const WarrantyDetailsModal = forwardRef(
 
         if (Object.keys(warranty).length > 0) {
           // Update existing warranty
+          console.log(formData);
+          
           await Axios.put(
             `/api/v1/app/warranty/updateWarrantyById/${warranty?._id}`,
-            formData,
+              formData,
             {
               headers: {
                 authorization: `Bearer ${token}`,
@@ -142,8 +144,9 @@ const WarrantyDetailsModal = forwardRef(
             }
           )
           .then(res=>{
-            toastMessage("success", "Warranty updated successfully!");
             setWarranties(res.data.warranties)
+            // window.location.reload();
+            toastMessage("success", "Warranty updated successfully!")
           })
         } else {
           // Add new warranty
@@ -154,8 +157,8 @@ const WarrantyDetailsModal = forwardRef(
             },
           })
           .then(res=>{
-            toastMessage("success", "Warranty added successfully!");
             setWarranties(res.data.warranties)
+            toastMessage("success", "Warranty added successfully!");
           })
         }
 
