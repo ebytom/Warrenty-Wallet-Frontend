@@ -44,24 +44,26 @@ const WarrantyDetailsModal = forwardRef(
     ];
 
     useEffect(() => {
-      //   setLoading(true);
-      // if(warrantyDetails)
-      // {
-      //   Axios.get("/api/v1/app/warranty/getWarrantyById", {
-      //     params: {
-      //       id: warrantyDetails?._id,
-      //     },
-      //   })
-      //     .then((res) => {
-      //       console.log(res);
-      //       setWarranty(res.data);
-      //       setLoading(false);
-      //     })
-      //     .catch((err) => {
-      //       setIsError(true);
-      //       setLoading(false);
-      //     });
-      // }
+      setLoading(true);
+      if (warrantyDetails) {
+        Axios.get(
+          `/api/v1/app/warranty/getWarrantyById/${warrantyDetails?._id}`,
+          {
+            params: {
+              id: warrantyDetails?._id,
+            },
+          }
+        )
+          .then((res) => {
+            setWarranty(res.data);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setWarranty({});
+            setIsError(true);
+            setLoading(false);
+          });
+      }
       setLoading(false);
     }, []);
 
@@ -73,6 +75,10 @@ const WarrantyDetailsModal = forwardRef(
     useImperativeHandle(ref, () => ({
       showLoading,
     }));
+
+    const isDisabled = () => {
+      return warranty && Object.keys(warranty).length > 0 && warranty.addedBy !== user.userId;
+    };
 
     const handleDateChange = (e, dateType) => {
       const dateValue = e.target.value;
@@ -110,7 +116,6 @@ const WarrantyDetailsModal = forwardRef(
         // Create FormData to send all values (including file) directly to backend
         const formData = new FormData();
         Object.keys(values).forEach((key) => {
-          console.log(values.invoiceURL?.[0]?.originFileObj);
           if (key === "invoiceURL" && values.invoiceURL?.[0]?.originFileObj) {
             // Append file for `invoiceURL` if present
             formData.append("invoiceFile", values.invoiceURL[0].originFileObj);
@@ -121,10 +126,10 @@ const WarrantyDetailsModal = forwardRef(
         });
         formData.append("addedBy", user.userId); // Replace with dynamic user ID if needed
 
-        if (warrantyDetails) {
+        if (warranty) {
           // Update existing warranty
           await Axios.put(
-            `/api/v1/app/warranty/updateWarrantyById/${warrantyDetails?._id}`,
+            `/api/v1/app/warranty/updateWarrantyById/${warranty?._id}`,
             formData,
             {
               headers: {
@@ -158,7 +163,7 @@ const WarrantyDetailsModal = forwardRef(
     const deleteWarranty = () => {
       if (deleteWarranty) {
         Axios.delete(
-          `/api/v1/app/warranty/deleteWarrantyById/${warrantyDetails._id}`,
+          `/api/v1/app/warranty/deleteWarrantyById/${warranty._id}`,
           {
             headers: {
               authorization: `bearer ${token}`,
@@ -184,12 +189,11 @@ const WarrantyDetailsModal = forwardRef(
       setLoading(true);
 
       const email = form.getFieldValue("shareWith");
-      console.log(email);
 
-      if (warrantyDetails && email) {
+      if (warranty && email) {
         try {
           const response = await Axios.post(
-            `/api/v1/app/warranty/shareAccess/${warrantyDetails._id}`,
+            `/api/v1/app/warranty/shareAccess/${warranty._id}`,
             { email },
             {
               headers: {
@@ -198,7 +202,6 @@ const WarrantyDetailsModal = forwardRef(
             }
           );
 
-          console.log(response);
           toastMessage("success", response.data.message);
           setWarranty(response.data);
         } catch (err) {
@@ -220,7 +223,7 @@ const WarrantyDetailsModal = forwardRef(
       setLoading(true);
       try {
         const response = await Axios.delete(
-          `/api/v1/app/warranty/revokeAccess/${warrantyDetails._id}`,
+          `/api/v1/app/warranty/revokeAccess/${warranty._id}`,
           {
             headers: {
               authorization: `Bearer ${token}`,
@@ -228,7 +231,6 @@ const WarrantyDetailsModal = forwardRef(
             data: { email }, // Pass email in the request body
           }
         );
-        console.log(response);
         toastMessage("success", response.data.message);
         setWarranty(response.data); // Update warranty data with response
       } catch (err) {
@@ -245,9 +247,8 @@ const WarrantyDetailsModal = forwardRef(
         <Modal
           title="Warranty Details"
           footer={
-            !(warrantyDetails &&
-            warrantyDetails?.addedBy != user.userId) &&
-            (warrantyDetails
+            !(isDisabled()) &&
+            (warranty
               ? [
                   <ConfirmModal
                     title="Confirm Action"
@@ -286,14 +287,12 @@ const WarrantyDetailsModal = forwardRef(
             colon={false}
             style={{ maxWidth: 600, marginTop: 50 }}
           >
-            {warrantyDetails && warrantyDetails.invoiceURL ? (
+            {warranty && warranty.invoiceURL ? (
               <Form.Item label="Invoice" name="invoiceURL">
                 <Button
                   type="primary"
                   style={{ width: "100%" }}
-                  onClick={() =>
-                    window.open(warrantyDetails.invoiceURL, "_blank")
-                  }
+                  onClick={() => window.open(warranty.invoiceURL, "_blank")}
                 >
                   Preview
                 </Button>
@@ -305,19 +304,17 @@ const WarrantyDetailsModal = forwardRef(
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 initialValue={
-                  warrantyDetails &&
-                  warrantyDetails.invoiceURL &&
-                  warrantyDetails.invoiceURL.length > 0
-                    ? [warrantyDetails.invoiceURL]
+                  warranty &&
+                  warranty.invoiceURL &&
+                  warranty.invoiceURL.length > 0
+                    ? [warranty.invoiceURL]
                     : []
                 }
               >
                 <Upload
                   listType="picture-card"
                   maxCount={1}
-                  disabled={
-                    warrantyDetails && warrantyDetails?.addedBy != user.userId
-                  }
+                  disabled={isDisabled()}
                   showUploadList={{ showRemoveIcon: true }}
                   // accept="image/*"
                 >
@@ -332,7 +329,7 @@ const WarrantyDetailsModal = forwardRef(
             <Form.Item
               label="Category"
               name="category"
-              initialValue={warrantyDetails ? warrantyDetails.category : ""}
+              initialValue={warranty ? warranty.category : ""}
               rules={[
                 {
                   required: true,
@@ -342,9 +339,7 @@ const WarrantyDetailsModal = forwardRef(
             >
               <Select
                 placeholder={"Select category"}
-                disabled={
-                  warrantyDetails && warrantyDetails?.addedBy != user.userId
-                }
+                disabled={isDisabled()}
               >
                 {categories?.map((option) => (
                   <Option key={option.id} value={option.name}>
@@ -356,7 +351,7 @@ const WarrantyDetailsModal = forwardRef(
             <Form.Item
               label="Item Name"
               name="itemName"
-              initialValue={warrantyDetails ? warrantyDetails.itemName : ""}
+              initialValue={warranty ? warranty.itemName : ""}
               rules={[
                 {
                   required: true,
@@ -365,10 +360,8 @@ const WarrantyDetailsModal = forwardRef(
               ]}
             >
               <Input
-                // disabled={warrantyDetails ? true : false}
-                disabled={
-                  warrantyDetails && warrantyDetails?.addedBy != user.userId
-                }
+                // disabled={warranty ? true : false}
+                disabled={isDisabled()}
                 name="itemName"
               />
             </Form.Item>
@@ -376,8 +369,8 @@ const WarrantyDetailsModal = forwardRef(
               label="Purchase Date"
               name="purchasedOn"
               initialValue={
-                warrantyDetails
-                  ? moment(warrantyDetails.purchasedOn).format("YYYY-MM-DD")
+                warranty
+                  ? moment(warranty.purchasedOn).format("YYYY-MM-DD")
                   : ""
               }
               rules={[
@@ -395,9 +388,7 @@ const WarrantyDetailsModal = forwardRef(
                   border: "1px solid #ddd",
                   borderRadius: "7px",
                 }}
-                disabled={
-                  warrantyDetails && warrantyDetails?.addedBy != user.userId
-                }
+                disabled={isDisabled()}
                 onChange={(e) => handleDateChange(e, "purchasedOn")}
               />
             </Form.Item>
@@ -411,10 +402,8 @@ const WarrantyDetailsModal = forwardRef(
                 },
               ]}
               initialValue={
-                warrantyDetails
-                  ? moment(warrantyDetails && warrantyDetails.expiresOn).format(
-                      "YYYY-MM-DD"
-                    )
+                warranty
+                  ? moment(warranty && warranty.expiresOn).format("YYYY-MM-DD")
                   : ""
               }
             >
@@ -426,38 +415,28 @@ const WarrantyDetailsModal = forwardRef(
                   border: "1px solid #ddd",
                   borderRadius: "7px",
                 }}
-                disabled={
-                  warrantyDetails && warrantyDetails?.addedBy != user.userId
-                }
+                disabled={isDisabled()}
                 onChange={(e) => handleDateChange(e, "expiresOn")}
               />
             </Form.Item>
             <Form.Item
               label="Description"
               name="description"
-              initialValue={warrantyDetails ? warrantyDetails.description : ""}
+              initialValue={warranty ? warranty.description : ""}
             >
               <Input
                 name="description"
-                disabled={
-                  warrantyDetails && warrantyDetails?.addedBy != user.userId
-                }
+                disabled={isDisabled()}
               />
             </Form.Item>
             <Form.Item
               label="Provider"
               name="warrantyProvider"
-              initialValue={
-                warrantyDetails ? warrantyDetails.warrantyProvider : ""
-              }
+              initialValue={warranty ? warranty.warrantyProvider : ""}
             >
-              <Input
-                disabled={
-                  warrantyDetails && warrantyDetails?.addedBy != user.userId
-                }
-              />
+              <Input disabled={isDisabled()} />
             </Form.Item>
-            {warrantyDetails && warrantyDetails.addedBy === user.userId && (
+            {warranty && warranty.addedBy === user.userId && (
               <>
                 <hr style={{ color: "#919191" }} />
                 <Form.Item label="Share With" name="shareWith">
@@ -467,13 +446,13 @@ const WarrantyDetailsModal = forwardRef(
                       <ShareIcon size={16} />
                     </Button>
                   </div>
-                  {warrantyDetails?.sharedWith.length > 0 && (
+                  {warranty?.sharedWith.length > 0 && (
                     <div
                       style={{ border: "1px solid #eee" }}
                       className="p-2 mt-2 rounded d-grid gap-2"
                     >
-                      {warrantyDetails &&
-                        warrantyDetails?.sharedWith?.map((user, index) => {
+                      {warranty &&
+                        warranty?.sharedWith?.map((user, index) => {
                           return (
                             <div
                               key={index}
@@ -522,8 +501,7 @@ const WarrantyDetailsModal = forwardRef(
           ]}
         >
           <p>
-            To confirm, type "<b>{warrantyDetails?.itemName}</b>" in the box
-            below.
+            To confirm, type "<b>{warranty?.itemName}</b>" in the box below.
           </p>
           <Form
             form={deleteForm}

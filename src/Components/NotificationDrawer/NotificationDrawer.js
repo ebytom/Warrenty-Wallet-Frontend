@@ -7,8 +7,8 @@ import { UserContext } from "../../App";
 import { Axios } from "../../Config/Axios/Axios";
 
 const NotificationDrawer = ({ navOpen, setNavOpen }) => {
-  const [isError, setIsError] = useState(false)
-  const [notifications, setNotifications] = useState([])
+  const [isError, setIsError] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const onNavClose = () => {
     setNavOpen(false);
   };
@@ -18,14 +18,17 @@ const NotificationDrawer = ({ navOpen, setNavOpen }) => {
 
   useEffect(() => {
     // setContentLoader(true);
-    Axios.get(`/api/v1/app/warranty/getExpiringWarrantiesByUser/${user.userId}`, {
-      params: {
-        addedBy: user.userId,
-      },
-      headers: {
-        authorization: `bearer ${token}`,
-      },
-    })
+    Axios.get(
+      `/api/v1/app/warranty/getExpiringWarrantiesByUser/${user.userId}`,
+      {
+        params: {
+          addedBy: user.userId,
+        },
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+      }
+    )
       .then((res) => {
         setNotifications(res.data);
         // setContentLoader(false);
@@ -64,13 +67,15 @@ const NotificationDrawer = ({ navOpen, setNavOpen }) => {
         onClick={onNavClose}
         icon={<CloseOutlined />}
       />
-      {
-        notifications?.map((notification, index)=>{
-          return(
-            <NotificationCard notification={notification} key={index}/>
-          )
+      {notifications.length>0 ? (
+        notifications?.map((notification, index) => {
+          return <NotificationCard notification={notification} key={index} />;
         })
-      }
+      ) : (
+        <b className="fs-5" style={{ color: "#d3d3d3" }}>
+          You're all caught up!
+        </b>
+      )}
     </Drawer>
   );
 };
