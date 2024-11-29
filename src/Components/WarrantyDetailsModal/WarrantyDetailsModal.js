@@ -68,7 +68,7 @@ const WarrantyDetailsModal = forwardRef(
           });
       }
       setLoading(false);
-    }, [warranties]);
+    }, []);
 
     const showLoading = () => {
       setOpen(true);
@@ -113,41 +113,34 @@ const WarrantyDetailsModal = forwardRef(
     const submitDetails = async () => {
       try {
         const values = await form.validateFields(); // Validate and get form values
-
         setContentLoader(true);
-
-        // Create FormData to send all values (including file) directly to backend
+    
         const formData = new FormData();
         Object.keys(values).forEach((key) => {
           if (key === "invoiceURL" && values.invoiceURL?.[0]?.originFileObj && Object.keys(warranty).length === 0) {
-            // Append file for `invoiceURL` only if adding a new warranty (warranty object is empty)
             formData.append("invoiceFile", values.invoiceURL[0].originFileObj);
           } else if (key !== "invoiceURL") {
-            // Append other form fields
             formData.append(key, values[key]);
           }
         });
-        formData.append("addedBy", user.userId); // Replace with dynamic user ID if needed
-
+        formData.append("addedBy", user.userId);
+    
         if (Object.keys(warranty).length > 0) {
           // Update existing warranty
-          console.log(formData);
-          
           await Axios.put(
             `/api/v1/app/warranty/updateWarrantyById/${warranty?._id}`,
-              formData,
+            formData,
             {
               headers: {
                 authorization: `Bearer ${token}`,
                 "Content-Type": "multipart/form-data",
               },
             }
-          )
-          .then(res=>{
-            setWarranties(res.data.warranties)
-            // window.location.reload();
-            toastMessage("success", "Warranty updated successfully!")
-          })
+          ).then((res) => {
+            setWarranty(res.data.warranty);  // Update the local state
+            setWarranties(res.data.warranties); // Update context state
+            toastMessage("success", "Warranty updated successfully!");
+          });
         } else {
           // Add new warranty
           await Axios.post("/api/v1/app/warranty/addWarranty", formData, {
@@ -155,22 +148,19 @@ const WarrantyDetailsModal = forwardRef(
               authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
-          })
-          .then(res=>{
-            setWarranties(res.data.warranties)
+          }).then((res) => {
+            setWarranties(res.data.warranties);  // Update context state with new warranties
             toastMessage("success", "Warranty added successfully!");
-          })
+          });
         }
-
-        // Reset form and close modal
+    
         setContentLoader(false);
         setOpen(false);
         form.resetFields();
-        // window.location.reload();
       } catch (error) {
         console.error("Form submission failed:", error);
         toastMessage("warning", "Something went wrong!");
-        setContentLoader(false); 
+        setContentLoader(false);
       }
     };
 
