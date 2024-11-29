@@ -7,6 +7,7 @@ import LoaderOverlay from "../../Components/LoaderOverlay/LoaderOverlay";
 import CategoryFilter from "../../Components/Filters/CategoryFilter/CategoryFilter";
 import Filters from "../../Components/Filters/Filters";
 import WarrantyCard from "../../Components/WarrantyCard/WarrantyCard";
+import { useWarranty } from '../../Components/WarrantyContext/WarrantyContext';
 
 const Dashboard = () => {
   const [contentLoader, setContentLoader] = useState(true);
@@ -15,10 +16,10 @@ const Dashboard = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isError, setIsError] = useState(false);
-  const [warranty, setWarranty] = useState([]);
   const [metadata, setMetadata] = useState([]);
 
   const [messageApi, contextHolder] = message.useMessage();
+  const { setWarranties, warranties } = useWarranty();
 
   const { user } = useContext(UserContext);
 
@@ -33,7 +34,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const lowercasedValue = searchValue.toLowerCase().trim();
-    const filtered = warranty.filter((item) => {
+    const filtered = warranties.filter((item) => {
       const matchesSearch =
         item.itemName.toLowerCase().includes(lowercasedValue) ||
         item.category.toLowerCase().includes(lowercasedValue);
@@ -46,7 +47,7 @@ const Dashboard = () => {
     });
 
     setFilteredData(filtered); // Set filtered data based on search input and selected categories
-  }, [searchValue, selectedCategories, warranty]);
+  }, [searchValue, selectedCategories, warranties]);
 
   useEffect(() => {
     setContentLoader(true);
@@ -59,9 +60,8 @@ const Dashboard = () => {
       },
     })
       .then((res) => {
-        setWarranty(res.data);
+        setWarranties(res.data);
         setContentLoader(false);
-        console.log(res);
       })
       .catch((err) => {
         setIsError(true);
