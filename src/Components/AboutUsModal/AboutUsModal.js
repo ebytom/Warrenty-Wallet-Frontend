@@ -20,8 +20,13 @@ const AboutUsModal = forwardRef(({}, ref) => {
       onCancel={handleCancel}
       footer={null}
     >
-      <div className="mt-4 p-2" style={{textAlign: 'justify'}}>
-        
+      <div className="mt-4 p-2" style={{ textAlign: "justify" }}>
+        Welcome to Warranty Wallet, your go-to solution for hassle-free warranty
+        management! Our mission is to simplify the way you organize and track
+        your warranties by providing a secure, user-friendly platform. We
+        believe that staying on top of your warranties shouldn’t be complicated,
+        so we’ve built an intuitive tool to keep your coverage information
+        accessible and organized—anytime, anywhere.
       </div>
     </Modal>
   );

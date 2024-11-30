@@ -26,7 +26,9 @@ const PrivacyPolicyModal = forwardRef(({}, ref) => {
       footer={null}l
     >
       <div className="mt-4 p-2" style={{ fontFamily: 'Arial, sans-serif', textAlign: 'justify' }}>
-        
+      At Warranty Wallet, your privacy is our top priority. We collect only the necessary information, such as your account details and warranty data, to provide seamless service. Your data is securely stored using industry-standard encryption, and we never share it with third parties without your consent. You remain in control of your information, and you can update or delete your data anytime.
+      <br/><br/>For more details, please refer to our full Privacy Policy.
+
       </div>
     </Modal>
   );
