@@ -34,7 +34,7 @@ const WarrantyCard = ({ warranty }) => {
         onClick={callWarrantyDetailsModal}
       >
         <div
-          className="bg-white rounded p-4 d-flex align-items-center justify-content-center"
+          className="bg-white rounded p-3 d-flex align-items-center justify-content-center"
           style={{
             width: "120px",
             height: "120px",
